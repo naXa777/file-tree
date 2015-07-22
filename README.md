@@ -1,6 +1,8 @@
 # file-tree
 
-## Task
+## Description
+
+### Task
 
 Implement a web-based file manager that observes file changes. The work has been done in the framework of a practice-based research in computer science that took place in Exadel, 2013.
 

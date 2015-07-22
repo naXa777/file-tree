@@ -4,7 +4,7 @@
 
 Implement a web-based file manager that observes file changes. The work has been done in the framework of a practice-based research in computer science that took place in Exadel, 2013.
 
-## Steps
+### Steps
 
 - [x] Implement a file indexing console application  
   _Implement console application which takes directory path as argument._  
@@ -36,8 +36,15 @@ Technologies: Maven, J2EE, Servlets/JSP, Tomcat, MVC, Spring Framework.
 
 1. Create database. Find and execute `src/main/resources/DB create.sql`.  
 2. Tweak JDBC connection in `jdbc connection.properties` file.  
-3. Set `app.use.implementation` to either `springDBService` or `dbService` in `application.properties` file.
+3. Set `app.use.implementation` to either `springDBService` or `dbService` in `application.properties` file if you want to use database as a storage.
 
 ### XML
 
-1. Set `app.use.implementation` to `xmlService` in `application.properties` file.
+Set `app.use.implementation` to `xmlService` in `application.properties` file if you want to use XML-based storage.
+
+## Quick Start
+
+1. Deploy the application to Tomcat;
+2. Open [http://localhost:8080/&lt;deploy-path&gt;](http://localhost:8080/file-tree) in a browser;
+3. Type in any credentials;
+4. And browse your `D:\` drive from the browser!

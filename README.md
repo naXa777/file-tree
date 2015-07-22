@@ -12,7 +12,7 @@ Implement a web-based file manager that observes file changes. The work has been
   - [x] Create an index for each file in the target directory. Index should contain file name, file size and last update fields.
   - [x] Collection of indexes should be serialised as XML on disc.
   - [x] Before serialisation application should check if previously serialised data for target directory already exists.
-  - [x] application should print complete report about files changes based on they previous and current index data.
+  - [x] Application should print complete report about file changes based on their previous and current index data.
   - [x] After report old serialised data should be rewritten by actual.
 
 - [x] Provide choice to use DB file indexes storage  

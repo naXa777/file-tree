@@ -1,0 +1,48 @@
+package com.exadel.filetree;
+
+import java.io.*;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 14.06.13
+ * Time: 15:07
+ */
+public class Main {
+    static final PrintStream con = System.out;
+
+    /**
+     * Entry point.
+     * @param args Program arguments.
+     * The 1st argument must be a path to a directory.
+     **/
+    public static void main(String args[]) {
+        if (args.length < 1) {
+            con.println( "[!] You must specify a folder as the first argument in order to run this program.\n" +
+                         "Usage: %program_name% \"Drive:\\path\\to\\folder\"");
+            return;
+        }
+
+        try {
+            Service srvc = new Service( args[0] );
+
+            if (srvc.isRunningFirstTime()) {
+                    // First run
+                srvc.describeIt();
+                srvc.writeDescription();
+                con.println( "[i] OK! I've remembered directory \"" + srvc.getDirectoryName() + "\"." );
+            } else {
+                    // Successive runs
+                srvc.readDescription();
+                srvc.describeIt();
+                con.println( "--- ---\n Report \n--- ---");
+                srvc.compareState();
+                srvc.writeDescription();
+            }
+        } catch (FileNotFoundException exc) {
+            exc.printStackTrace();
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+    }
+}

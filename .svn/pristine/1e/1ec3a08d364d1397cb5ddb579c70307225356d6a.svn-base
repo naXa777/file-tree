@@ -1,0 +1,220 @@
+package com.exadel.filetree;
+
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 19.06.13
+ * Time: 22:26
+ */
+public final class Service {
+    static final PrintStream con = System.out;
+    private Set<FileIndex> description, currentState;
+    private File directory, output;
+    private String outputDir = "Default Output Folder";
+
+    /**
+     * Default constructor.
+     */
+    public Service() {
+        description = new HashSet<FileIndex>();
+        currentState = new HashSet<FileIndex>();
+    }
+
+    /**
+     * Big constructor.
+     * @param path Path to a directory
+     */
+    public Service(String path) {
+        description = new HashSet<FileIndex>();
+        currentState = new HashSet<FileIndex>();
+
+        directory = new File( path );
+        if (!directory.exists() || !directory.isDirectory())
+            con.println( "[!] Argument PATH isn't a valid folder."); // I can't keep working in such embarrassing environment!");
+        else
+            setUpOutputFile();
+    }
+
+    /**
+     * Recursive method <code>describeIt</code> describes all files
+     * and subdirectories in root directory <code>dir</code>;
+     * Method places collected info into the set <code>currentState</code>.
+     *
+     * @param dir Root directory for describing
+     * @throws java.io.IOException
+     */
+    public void describeIt(File dir) throws IOException {
+        FileIndex fi;
+        fi = new FileIndex( dir.getAbsolutePath(), dir.lastModified(), dir.length(), dir.isFile() );
+        currentState.add( fi );
+
+        if (dir.isDirectory()) {
+            //con.println( "Dir: " + dir.getAbsolutePath() );
+            File content[] = dir.listFiles();
+            for (File f : content)
+                describeIt( f );
+            //con.println( "--- --- --- --- ---" );
+        } else {
+            //con.println( dir.getAbsolutePath() );
+        }
+    }
+
+    /**
+     * A simple wrapper invoking previous method with default directory.
+     * @throws IOException
+     */
+    public void describeIt() throws IOException {
+        describeIt( directory );
+    }
+
+    /**
+     * Serialization. Method writes directory description (currentState) into XML-file.
+     *
+     * @param file XML-file, which will contain information about directory
+     * @throws IOException
+     */
+    public void writeDescription(File file) throws IOException {
+            // create Output file and directories, if they don't exist yet
+        File outPath = new File( outputDir );
+        if (!outPath.exists()) {
+            outPath.mkdirs();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        XMLEncoder encoder = new XMLEncoder( new BufferedOutputStream( new FileOutputStream( file ) ) );
+        for (FileIndex fi : currentState)
+            encoder.writeObject( fi );
+        encoder.writeObject( new FileIndex() );   // XML-файл завершается пустой записью
+        encoder.close();
+    }
+
+    /**
+     * Serialization. A wrapper for a previous method.
+     *
+     * @throws IOException
+     */
+    public void writeDescription() throws IOException {
+        //writeDescription( new File("Description.xml") );
+        writeDescription( output );
+    }
+
+    /**
+     * Method tells us whether directory was described before or not.
+     *
+     * @return  <code>TRUE</code>, if directory wasn't described earlier;
+     *          <code>FALSE</code> otherwise.
+     */
+    public boolean isRunningFirstTime() {
+        return !output.exists();
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and records it to HashSet<FileIndex> description.
+     *
+     * @param file XML-file, containing information about directory
+     * @throws IOException
+     */
+    private void readDescription(File file) throws IOException {
+        description.clear();
+        XMLDecoder decoder = new XMLDecoder( new BufferedInputStream( new FileInputStream( file ) ) );
+
+        //description = (Set<FileIndex>) decoder.readObject();
+        FileIndex fi = (FileIndex)decoder.readObject();
+        while (!fi.getFilename().isEmpty()) {
+            // con.println( fi );
+            description.add( fi );
+            fi = (FileIndex)decoder.readObject();
+        }
+
+        decoder.close();
+    }
+
+    /**
+     * Deserialization. A simple wrapper for previous method.
+     *
+     * @throws IOException
+     */
+    public void readDescription() throws IOException {
+        readDescription( output );
+    }
+
+    /**
+     * Comparison of two states: description & currentState;
+     * Prints complete report about file changes to (the) console.
+     */
+    public void compareState() {
+        for (FileIndex fileIndex : currentState) {
+            if ( fileIndex.getFilename().isEmpty() )  // skip empty record
+                continue;
+            if (description.contains( fileIndex )) {
+                for (FileIndex alterFileIndex : description)
+                    if (fileIndex.equals( alterFileIndex )) {
+                        if (fileIndex.getLastModif().after( alterFileIndex.getLastModif() ))
+                            con.println( "MODIFIED: " + alterFileIndex );
+                        else if (fileIndex.getLastModif().equals( alterFileIndex.getLastModif() ))
+                            con.println( /*"NO CHANGES: " +*/ alterFileIndex );
+                        else    // дата изменения перенеслась в прошлое
+                            con.println( "REPLACED WITH IT'S PREVIOUS VERSION: " + alterFileIndex );
+                    }
+            } else
+                con.println( "NEW FILE: " + fileIndex );
+        }
+        for (FileIndex fileIndex : description)
+            if ( !currentState.contains( fileIndex ) ) {
+                con.println( "DELETED: " + fileIndex );
+            }
+    }
+
+    /**
+     * Method compares current state of a directory with the state recorded in XML-file.
+     * Fundamental distinction from method compareState():
+     * User manually specifies XML-file containing state with which he wants to compare
+     * current state of a directory.
+     * @param file XML-file
+     */
+    public void compareWith(File file) throws IOException {
+        readDescription( file );
+        if (currentState.isEmpty())
+            describeIt();
+        compareState();
+    }
+
+    /**
+     * @return Name of a directory, specified by user during creation of this class
+     */
+    public String getDirectoryName() {
+        return directory.getName();
+    }
+
+    /**
+     * @return Directory in which class stores XML-files
+     */
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    private void setUpOutputFile() {
+        output = new File( getOutputDir() + File.separator + directory.getAbsolutePath().hashCode() + ".xml" );
+    }
+
+    /**
+     * Method for changing output directory.
+     *
+     * @param outputDir Directory in which XML-files should be stored
+     */
+    public void setOutputDir(String outputDir) {
+        while (outputDir.endsWith( File.separator ))
+            outputDir.substring( 0, outputDir.length() - 1 );
+        this.outputDir = outputDir;
+        setUpOutputFile();
+    }
+}

@@ -1,0 +1,129 @@
+package com.exadel.filetree;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 14.06.13
+ * Time: 17:27
+ */
+
+/**
+ * Класс является сруктурой, описывающей файлы и директории.
+ *
+ * @author naXa!
+ */
+public class FileIndex implements Serializable {
+    private String filename;
+    private Date lastModif;
+    private Long size;
+    private boolean file;
+
+    /**
+     * Default constructor
+     */
+    public FileIndex() {
+        this.filename = "";
+        this.lastModif = new Date();
+        this.size = 0L;
+        this.file = true;
+    }
+
+    /**
+     * Big constructor.
+     * 
+     * @param filename Name of a file
+     * @param lastModif Date of file's latest modification
+     * @param size Size of a file in bytes
+     * @param file Is it a file?
+     */
+    public FileIndex(String filename, Date lastModif, Long size, boolean file) {
+        this.filename = filename;
+        this.lastModif = lastModif;
+        this.size = size;
+        this.file = file;
+    }
+
+    /**
+     * Big constructor - 2.
+     * 
+     * @param filename
+     * @param lastModif long -> Date
+     * @param size
+     * @param file
+     */
+    public FileIndex(String filename, long lastModif, Long size, boolean file) {
+        this.filename = filename;
+        this.lastModif = new Date( lastModif );
+        this.size = size;
+        this.file = file;
+    }
+
+    /**
+     * Constructor for directories.
+     * 
+     * @param filename Name of a directory
+     * @param lastModif Date of latest modification (long)
+     */
+    public FileIndex(String filename, long lastModif) {
+        this.filename = filename;
+        this.lastModif = new Date( lastModif );
+        this.size = 0L;     // ? not sure
+        this.file = false;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public Date getLastModif() {
+        return lastModif;
+    }
+
+    public void setLastModif(Date lastModif) {
+        this.lastModif = lastModif;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public boolean isFile() {
+        return file;
+    }
+
+    public void setFile(boolean file) {
+        this.file = file;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof FileIndex))
+            return false;
+
+        FileIndex fileIndex = (FileIndex)obj;
+        return !(!getFilename().equals( fileIndex.getFilename() ) || isFile() != fileIndex.isFile());
+    }
+
+    @Override
+    public int hashCode() {
+        return filename.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getFilename();
+    }
+}

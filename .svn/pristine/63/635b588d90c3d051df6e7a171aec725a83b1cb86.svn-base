@@ -1,0 +1,165 @@
+package com.exadel.filetree;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 20.06.13
+ * Time: 22:02
+ */
+public abstract class AbstractService implements IService {
+    private static final PrintStream cons = System.out;
+
+    protected Set<FileIndex> description, currentState;
+    protected File directory, output;
+    protected String outputDir = "Default Output Folder";
+
+    public AbstractService() {
+        description = new HashSet<FileIndex>();
+        currentState = new HashSet<FileIndex>();
+        output = null;
+        directory = null;
+    }
+
+    /**
+     * Recursive method <code>describeIt</code> describes all files
+     * and subdirectories in root directory <code>dir</code>;
+     * Method places collected info into the set <code>currentState</code>.
+     *
+     * @param dir Root directory for describing
+     * @throws java.io.IOException
+     */
+    @Override
+    public void describeIt(File dir) throws IOException {
+        FileIndex fi;
+        fi = new FileIndex( dir.getAbsolutePath(), dir.lastModified(), dir.length(), dir.isFile() );
+        currentState.add( fi );
+
+        if (dir.isDirectory()) {
+            //con.println( "Dir: " + dir.getAbsolutePath() );
+            File content[] = dir.listFiles();
+            for (File f : content)
+                describeIt( f );
+            //con.println( "--- --- --- --- ---" );
+        } else {
+            //con.println( dir.getAbsolutePath() );
+        }
+    }
+
+    /**
+     * A simple wrapper invoking previous method with default directory.
+     * @throws IOException
+     */
+    public void describeIt() throws IOException {
+        describeIt( directory );
+    }
+
+    /**
+     * Method tells us whether directory was described before or not.
+     *
+     * @return  <code>TRUE</code>, if directory wasn't described earlier;
+     *          <code>FALSE</code> otherwise.
+     */
+    public boolean isRunningFirstTime() {
+        return !output.exists();
+    }
+
+    /**
+     * Comparison of two states: description & currentState;
+     * Prints complete report about file changes to (the) console.
+     */
+    @Override
+    public void compareState() {
+        for (FileIndex fileIndex : currentState) {
+            if ( fileIndex.getFilename().isEmpty() )  // skip empty record
+                continue;
+            if (description.contains( fileIndex )) {
+                for (FileIndex alterFileIndex : description)
+                    if (fileIndex.equals( alterFileIndex )) {
+                        if (fileIndex.getLastModif().after( alterFileIndex.getLastModif() ))
+                            cons.println( "MODIFIED: " + alterFileIndex );
+                        else if (fileIndex.getLastModif().equals( alterFileIndex.getLastModif() ))
+                            cons.println( /*"NO CHANGES: " +*/ alterFileIndex );
+                        else    // дата изменения перенеслась в прошлое
+                            cons.println( "REPLACED WITH IT'S PREVIOUS VERSION: " + alterFileIndex );
+                    }
+            } else
+                cons.println( "NEW FILE: " + fileIndex );
+        }
+        for (FileIndex fileIndex : description)
+            if ( !currentState.contains( fileIndex ) ) {
+                cons.println("DELETED: " + fileIndex);
+            }
+    }
+
+    protected abstract void readDescription(File file) throws IOException;
+    public abstract void writeDescription(File file) throws IOException;
+
+    /**
+     * Deserialization. A simple wrapper for previous method.
+     *
+     * @throws IOException
+     */
+    public void readDescription() throws IOException {
+        readDescription( output );
+    }
+
+    /**
+     * Serialization. A wrapper for a previous method.
+     *
+     * @throws IOException
+     */
+    public void writeDescription() throws IOException {
+        //writeDescription( new File("Description.xml") );
+        writeDescription( output );
+    }
+
+    /**
+     * Method compares the current state of a directory with the state recorded in a file.
+     * Fundamental distinction from method compareState():
+     * User manually specifies a file containing the state with which he wants to compare
+     * the current state of a directory.
+     * @param file File
+     */
+    public void compareWith(File file) throws IOException {
+        readDescription( file );
+        if (currentState.isEmpty())
+            describeIt();
+        compareState();
+    }
+
+    /**
+     * @return Name of a directory, specified by user during creation of this class
+     */
+    public String getDirectoryName() {
+        return directory.getName();
+    }
+
+    /**
+     * @return Directory in which class stores XML-files
+     */
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    protected void setUpOutputFile() {
+        output = new File( getOutputDir() + File.separator + directory.getAbsolutePath().hashCode() + ".xml" );
+    }
+
+    /**
+     * Method for changing output directory.
+     *
+     * @param outputDir Directory in which XML-files should be stored
+     */
+    public void setOutputDir(String outputDir) {
+        while (outputDir.endsWith( File.separator ))
+            outputDir.substring( 0, outputDir.length() - 1 );
+        this.outputDir = outputDir;
+        setUpOutputFile();
+    }
+}

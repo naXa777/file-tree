@@ -1,0 +1,55 @@
+package com.exadel.filetree;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+//import javax.servlet.annotation.WebServlet;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 27.06.13
+ * Time: 1:20
+ */
+//@WebServlet("/file-tree")
+public class MainServlet extends HttpServlet {
+    private IService srvc;
+
+    public MainServlet() {
+        ApplicationContext context = new ClassPathXmlApplicationContext( "classpath:app-context.xml" );
+        srvc = (IService)context.getBean( "useThis" );
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType( "text/html" );
+        PrintWriter writer = resp.getWriter();
+        try {
+            writer.println( "<HTML>\n" +
+                            "<HEAD>\n" +
+                            "   <title>First Servlet Page</title>\n" +
+                            "</HEAD>\n" +
+                            "<BODY>\n" +
+                            "   <center><h1>Welcome, Dear Visitor! (3)</h1></center>\n" +
+                            "<br/><br/>\n" +
+
+                            "\n" +
+
+                            "</BODY>\n" +
+                            "</HTML>" );
+        } finally {
+            writer.close();
+        }
+    }
+
+    public static String getMessage() {
+        return "Hello, world!";
+    }
+}

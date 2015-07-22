@@ -1,0 +1,85 @@
+package com.exadel.filetree;
+
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.util.HashSet;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 19.06.13
+ * Time: 22:26
+ */
+public class XmlService extends AbstractService {
+    private static final PrintStream cons = System.out;
+
+    /**
+     * Default constructor.
+     */
+    public XmlService() {
+        super();
+    }
+
+    /**
+     * Big constructor.
+     * @param path Path to a directory
+     */
+    public XmlService(String path) {
+        super();
+
+        directory = new File( path );
+        if (!directory.exists() || !directory.isDirectory())
+            cons.println( "[!] Argument PATH isn't a valid folder."); // I can't keep working in such embarrassing environment!");
+        else
+            setUpOutputFile();
+        output = null;
+    }
+
+    /**
+     * Serialization. Method writes directory description (currentState) into XML-file.
+     *
+     * @param file XML-file, which will contain information about directory
+     * @throws IOException
+     */
+    @Override
+    public void writeDescription(File file) throws IOException {
+            // create Output file and directories, if they don't exist yet
+        File outPath = new File( outputDir );
+        if (!outPath.exists()) {
+            outPath.mkdirs();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        XMLEncoder encoder = new XMLEncoder( new BufferedOutputStream( new FileOutputStream( file ) ) );
+        for (FileIndex fi : currentState)
+            encoder.writeObject( fi );
+        encoder.writeObject( new FileIndex() );   // XML-файл завершается пустой записью
+        encoder.close();
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and records it to HashSet<FileIndex> description.
+     *
+     * @param file XML-file, containing information about directory
+     * @throws IOException
+     */
+    @Override
+    protected void readDescription(File file) throws IOException {
+        description.clear();
+        XMLDecoder decoder = new XMLDecoder( new BufferedInputStream( new FileInputStream( file ) ) );
+
+        //description = (Set<FileIndex>) decoder.readObject();
+        FileIndex fi = (FileIndex)decoder.readObject();
+        while (!fi.getFilename().isEmpty()) {
+            // con.println( fi );
+            description.add( fi );
+            fi = (FileIndex)decoder.readObject();
+        }
+
+        decoder.close();
+    }
+}

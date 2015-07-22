@@ -1,0 +1,98 @@
+package com.exadel.filetree;
+
+import java.util.Date;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 14.06.13
+ * Time: 17:27
+ */
+
+/**
+ * Класс является сруктурой, описывающей файлы и директории.
+ * @author naXa!
+ */
+public class FileIndex {
+    private String filename;
+    private Date lastModif;
+    private Long size;
+    private Boolean file;
+
+    public FileIndex() {
+        this.filename = "";
+        this.lastModif = new Date();
+        this.size = 0L;
+        this.file = true;
+    }
+
+    public FileIndex(String filename, Date lastModif, Long size, Boolean file) {
+        this.filename = filename;
+        this.lastModif = lastModif;
+        this.size = size;
+        this.file = file;
+    }
+
+    public FileIndex(String filename, long lastModif, Long size, Boolean file) {
+        this.filename = filename;
+        this.lastModif = new Date (lastModif);
+        this.size = size;
+        this.file = file;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public Date getLastModif() {
+        return lastModif;
+    }
+
+    public void setLastModif(Date lastModif) {
+        this.lastModif = lastModif;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public Boolean isFile() {
+        return file;
+    }
+
+    public void setFile(Boolean file) {
+        this.file = file;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof FileIndex))
+            return false;
+
+        FileIndex fileIndex = (FileIndex)obj;
+        if (!filename.equals( fileIndex.filename ))
+            return false;
+        else
+            return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return filename.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getFilename();
+    }
+}

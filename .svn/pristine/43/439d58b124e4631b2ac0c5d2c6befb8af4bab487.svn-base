@@ -1,0 +1,67 @@
+package com.exadel.filetree;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 23.06.13
+ * Time: 12:36
+ */
+
+enum TypeOfChange{NOT_CHANGED, MODIFIED, CREATED, DELETED, ROLLBACKED};
+
+public class ChangeDescription implements Comparable<ChangeDescription> {
+    private String filename;    // file name without a path
+    private boolean file;       // TRUE - file(document), FALSE - directory
+    private TypeOfChange change;
+
+    public ChangeDescription(String filename, boolean file, TypeOfChange change) {
+        this.filename = filename;
+        this.file = file;
+        this.change = change;
+    }
+
+    public ChangeDescription(FileIndex fileIndex, TypeOfChange change) {
+        this.filename = fileIndex.getFileName();
+        this.file = fileIndex.isFile();
+        this.change = change;
+    }
+
+    public TypeOfChange getChange() {
+        return change;
+    }
+
+    public boolean isFile() {
+        return file;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    @Override
+    public String toString() {
+        switch (change) {
+            case NOT_CHANGED:
+                return "NO CHANGES";
+            case MODIFIED:
+                return "MODIFIED";
+            case CREATED:
+                return "NEW FILE";
+            case DELETED:
+                return "DELETED";
+            case ROLLBACKED:
+                return "REPLACED WITH ITS' PREVIOUS VERSION";
+            default:
+                return "[NOTHING]";
+        }
+    }
+
+    @Override
+    public int compareTo(ChangeDescription that) {
+        if ((this.isFile() && that.isFile()) ||
+                (!this.isFile() && !that.isFile()))
+            return this.filename.compareTo( that.filename );
+        else
+            return this.isFile()? 1 : -1;
+    }
+}

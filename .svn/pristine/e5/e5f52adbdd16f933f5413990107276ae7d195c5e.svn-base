@@ -1,0 +1,34 @@
+.page-title {
+    color: darkgreen;
+    text-align: center;
+    font-size: 32px;
+}
+
+.error-title {
+    color: darkred;
+    text-align: center;
+    font-size: 32px;
+}
+
+.file {
+    text-decoration-color: blue;
+    text-decoration: underline;
+}
+
+.description {
+    display: inline;
+    font-style: italic;
+    font-size: medium;
+    color: graytext;
+}
+
+/*
+img {
+    width: 16px;
+    height: 16px;
+}
+
+#ico {
+    width: 16px;
+    height: 16px;
+}*/

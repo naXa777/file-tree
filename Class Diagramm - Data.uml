@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.exadel.filetree.data.ChangeDescription</OriginalElement>
+  <nodes>
+    <node x="8.0" y="96.0">com.exadel.filetree.data.ChangeDescription</node>
+    <node x="139.89004632814803" y="155.30389076130598">java.lang.Comparable</node>
+    <node x="28.96210400630389" y="218.0024935465642">com.exadel.filetree.data.FileIndex</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.exadel.filetree.data.FileIndex" target="java.lang.Comparable">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.data.ChangeDescription" target="java.lang.Comparable">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.data.ChangeDescription" target="com.exadel.filetree.data.FileIndex">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="119.5" y="171.5" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

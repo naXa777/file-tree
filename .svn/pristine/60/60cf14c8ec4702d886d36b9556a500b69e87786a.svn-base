@@ -1,0 +1,104 @@
+package com.exadel.filetree;
+
+import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Set;
+
+//import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 24.06.13
+ * Time: 15:36
+ */
+//@Repository
+public class SpringDBService extends AbstractService {
+    private JdbcTemplate jdbcTemplate;
+//    @Autowired DataSource ds;
+
+    public SpringDBService() {
+        super();
+    }
+
+    public SpringDBService(String path) {
+        this();
+
+        setUpInputDir( path );
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean wasSerialized(File dir) throws SQLException {
+        int N = this.jdbcTemplate.queryForInt("SELECT COUNT(ID) FROM root_folder " +
+                "WHERE (Path = ?)", dir.getAbsolutePath());
+        return (N > 0);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void saveDescription(Set<FileIndex> description, File dir) throws Exception {
+        String  insertQuery  = "INSERT INTO root_folder(Path) VALUES (?)",
+                insertQuery2 = "INSERT INTO file_index(Filename, LastModification, Size, Type, Parent) VALUES (?, ?, ?, ?, ?)",
+                selectQuery  = "SELECT COUNT(ID) AS N FROM root_folder AS rf WHERE rf.Path LIKE ?",
+                lastIDQuery  = "SELECT LAST_INSERT_ID()";
+        Integer idRoot;
+
+        // insert - into root_folder
+        //TODO: нужна проверка, чтобы не вставлять повторяющиеся значения (попробовать добавить её в БД)
+        jdbcTemplate.update( insertQuery, dir.getAbsolutePath() );
+        // get last ID
+        idRoot = jdbcTemplate.queryForInt( lastIDQuery );
+
+        for (FileIndex fi : description) {
+            // insert 2 - into file_index
+            String filename = fi.getFilename();
+            // representing date-time in string format
+            SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+            String modifDateTime = sdf.format( fi.getLastModif() );
+            Long size = fi.getSize();
+            String type = fi.isFile()? "File" : "Directory";
+            jdbcTemplate.update( insertQuery2, filename, modifDateTime, size, type, idRoot );
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<FileIndex> loadDescription(File dir) throws Exception {
+        String query =  "SELECT Filename, LastModification, Size, Type " +
+                        "FROM file_index AS fi, root_folder AS rf " +
+                        "WHERE ((fi.Parent = rf.ID) AND (rf.Path = ?))";
+
+        return new HashSet<FileIndex>( jdbcTemplate.query(
+                query,
+                new RowMapper<FileIndex>() {
+                    @Override
+                    public FileIndex mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+                        FileIndex fileIndex = new FileIndex();
+                        fileIndex.setFilename(resultSet.getString("Filename"));
+                        fileIndex.setLastModif(resultSet.getTimestamp("LastModification"));
+                        fileIndex.setFile(resultSet.getString("Type").equals("File"));
+                        if (fileIndex.isFile())
+                            fileIndex.setSize(resultSet.getLong("Size"));
+                        return fileIndex;
+                    }
+                },
+                dir.getAbsolutePath()) );
+    }
+}

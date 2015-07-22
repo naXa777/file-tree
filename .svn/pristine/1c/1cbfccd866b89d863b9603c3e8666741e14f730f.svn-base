@@ -1,0 +1,168 @@
+package com.exadel.filetree;
+
+import java.io.*;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Properties;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 20.06.13
+ * Time: 21:38
+ */
+public class DBService extends AbstractService {
+    private static final String pathToPropsFile = "src\\main\\resources\\jdbc connection.properties";
+    private String driver, url, userName, password;
+    private Connection conn = null;
+
+    /**
+     * Default constructor.
+     */
+    public DBService() {
+        super();
+
+        Properties props = new Properties();
+        try {
+            //String driver;
+            props.load( new FileInputStream( pathToPropsFile ) );
+            driver   = props.getProperty("driver");
+            url      = props.getProperty( "url" );
+            userName = props.getProperty( "username" );
+            password = props.getProperty( "password" );
+
+            //DriverManager.registerDriver( ... );
+            Class.forName( driver ).newInstance();
+            conn = DriverManager.getConnection( url, userName, password );
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                    //cons.println("Database connection terminated.");
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Big constructor.
+     * @param path Path to a directory
+     */
+    public DBService(String path) {
+        this();
+
+        setUpInputDir( path );
+    }
+
+
+    /**
+     * @param dir
+     * @return <code>TRUE</code>, if description for directory is present in database; <code>FALSE</code> otherwise
+     * @throws SQLException
+     */
+    @Override
+    public boolean wasSerialized(File dir) throws SQLException {
+        conn = DriverManager.getConnection( url, userName, password );
+
+        PreparedStatement stmt = conn.prepareStatement( "SELECT COUNT(ID) AS N FROM root_folder " +
+                                                        "WHERE (Path = ?)" );
+        stmt.setString( 1, dir.getAbsolutePath() );
+        ResultSet rs = stmt.executeQuery();
+
+        boolean result = (rs.next() && (rs.getInt("N") > 0));
+        stmt.close();
+        conn.close();
+        return result;
+    }
+
+    /**
+     * Serialization. Method writes directory description (current states) into DB.
+     *
+     * @param dir
+     * @throws SQLException
+     */
+    @Override
+    public void saveDescription(Set<FileIndex> description, File dir) throws SQLException {
+        String  insertQuery  = "INSERT INTO root_folder(Path) VALUES (?)",
+                insertQuery2 = "INSERT INTO file_index(Filename, LastModification, Size, Type, Parent) VALUES (?, ?, ?, ?, ?)",
+                selectQuery  = "SELECT COUNT(ID) AS N FROM root_folder AS rf WHERE rf.Path LIKE ?",
+                lastIDQuery  = "SELECT LAST_INSERT_ID() AS ID";
+        Integer idRoot;
+
+        conn = DriverManager.getConnection( url, userName, password );
+
+            // insert - into root_folder
+            //TODO: нужна проверка, чтобы не вставлять повторяющиеся значения (попробовать добавить её в БД)
+        PreparedStatement stmt = conn.prepareStatement( insertQuery );
+        stmt.setString( 1, dir.getAbsolutePath() );
+        stmt.execute();
+        stmt.close();
+
+            // get last ID
+        Statement callForID = conn.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
+        ResultSet rs = callForID.executeQuery( lastIDQuery );
+        callForID.close();
+        if (rs.next())
+            idRoot = rs.getInt( "ID" );
+
+        for (FileIndex fi : description) {
+                // insert 2 - into file_index
+            stmt = conn.prepareStatement( insertQuery2 );
+            stmt.setString( 1, fi.getFilename() );
+                // saving date-time:
+            SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+            String currDateTime = sdf.format( fi.getLastModif() );
+            stmt.setString( 2, currDateTime );
+            stmt.setLong(   3, fi.getSize() );
+            stmt.setString( 4, fi.isFile()? "File" : "Directory" );
+            stmt.setInt(    5, idRoot );
+            stmt.execute();
+            stmt.close();
+        }
+
+        // The End
+        conn.close();
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and records it to HashSet<FileIndex> description.
+     *
+     * @param dir
+     * @throws SQLException
+     */
+    @Override
+    public Set<FileIndex> loadDescription(File dir) throws SQLException {
+        Set<FileIndex> result = new HashSet<FileIndex>();
+        String query =  "SELECT Filename, LastModification, Size, Type " +
+                        "FROM file_index AS fi, root_folder AS rf " +
+                        "WHERE ((fi.Parent = rf.ID) AND (rf.Path = ?))";
+
+        conn = DriverManager.getConnection( url, userName, password );
+
+            // select all files
+        PreparedStatement stmt = conn.prepareStatement( query );
+        stmt.setString( 1, dir.getAbsolutePath() );
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            String filename = rs.getString( "Filename" );
+            java.util.Date lastModif = rs.getTimestamp( "LastModification" );
+            String type = rs.getString( "Type" );
+            Long size = 0L;
+            if (type.equals("File"))
+                size = rs.getLong( "Size" );
+
+            result.add( new FileIndex( filename, lastModif, size, (type.equals("File") ) ) );
+        }
+
+        stmt.close();
+        conn.close();
+        return result;
+    }
+}

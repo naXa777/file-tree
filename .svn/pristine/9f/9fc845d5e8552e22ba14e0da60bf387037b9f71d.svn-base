@@ -1,0 +1,46 @@
+.page-title {
+    color: darkgreen;
+    text-align: center;
+    font-size: 32px;
+}
+
+.error-title {
+    color: black;
+    text-align: center;
+    font-size: 32px;
+}
+
+.file {
+    color: blue;
+    text-decoration: underline;
+}
+
+.description {
+    display: inline;
+    font-style: italic;
+    font-size: medium;
+    color: graytext;
+}
+
+input.flat {
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+#error {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+/*
+img {
+    width: 16px;
+    height: 16px;
+}
+
+#ico {
+    width: 16px;
+    height: 16px;
+}*/

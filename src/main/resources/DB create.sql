@@ -1,0 +1,74 @@
+CREATE DATABASE IF NOT EXISTS file_tree_db CHARACTER SET utf8;
+
+USE file_tree_db;
+CREATE TABLE IF NOT EXISTS Root_Folder (
+  ID INTEGER NOT NULL AUTO_INCREMENT,
+  Path VARCHAR(1024) NOT NULL,
+
+  PRIMARY KEY (ID)
+) CHARACTER SET utf8;
+
+CREATE TABLE IF NOT EXISTS File_Index (
+  ID INTEGER NOT NULL AUTO_INCREMENT,
+  Parent INTEGER NOT NULL,
+  -- Parent VARCHAR(1024) NOT NULL,
+  Filename VARCHAR(1024) NOT NULL,
+  LastModification DATETIME NOT NULL,
+  Size BIGINT UNSIGNED,
+  Type ENUM('File', 'Directory') NOT NULL,
+
+  PRIMARY KEY (ID),
+  FOREIGN KEY (Parent) REFERENCES Root_Folder(ID) ON DELETE CASCADE
+) CHARACTER SET utf8;
+
+delimiter //
+DROP FUNCTION IF EXISTS insertFolder;
+CREATE FUNCTION insertFolder(
+  Path1 VARCHAR(1024) )
+RETURNS INTEGER
+COMMENT 'Функция добавляет новую папку, если такой нету, и возвращает её ID.'
+BEGIN
+  IF exists( SELECT ID FROM Root_Folder WHERE (Path = Path1) ) THEN
+    SET @ID = (SELECT ID FROM Root_Folder WHERE (Path = Path1));
+  ELSE
+    INSERT INTO Root_Folder(Path) VALUES (Path1);
+    SET @ID = LAST_INSERT_ID();
+  END IF;
+
+  RETURN @ID;
+END//
+
+DROP PROCEDURE IF EXISTS clearFolder;
+CREATE PROCEDURE clearFolder(
+  Path1 VARCHAR(1024) )
+COMMENT 'Функция удаляет из БД записи о файлах, принадлежащих к опред. папке.'
+  DELETE FROM File_Index
+  WHERE (Parent IN (
+    SELECT ID FROM Root_Folder
+    WHERE (Path = Path1)));
+
+DROP PROCEDURE IF EXISTS insertFile;
+CREATE PROCEDURE insertFile(
+  Filename1 VARCHAR(1024),
+  LastModification1 DATETIME,
+  Size1 BIGINT UNSIGNED,
+  Type1 ENUM('File', 'Directory'),
+  Parent1 VARCHAR(1024) )
+COMMENT 'Функция для корректной вставки файла.'
+BEGIN
+  SET @ParentID = (SELECT insertFolder( Parent1 ));
+  INSERT INTO File_Index(Filename, LastModification, Size, Type, Parent) VALUES
+  (Filename1, LastModification1, Size1, Type1, @ParentID);
+END//
+
+delimiter ;
+
+/*
+CREATE TRIGGER Guard1 BEFORE INSERT
+ON File_Index FOR EACH ROW
+  DELETE FROM File_Index WHERE (Filename LIKE new.Filename);
+
+CREATE TRIGGER Guard2 BEFORE INSERT
+ON Root_Folder FOR EACH ROW
+  DELETE FROM Root_Folder WHERE (Path LIKE new.Path);
+  */

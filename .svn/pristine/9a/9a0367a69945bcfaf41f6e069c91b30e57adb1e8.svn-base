@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS test;
+
+USE test;
+CREATE TABLE IF NOT EXISTS File_Index (
+  Filename VARCHAR(767) PRIMARY KEY NOT NULL,
+  LastModification DATE NOT NULL,
+  Size BIGINT UNSIGNED,
+  Type ENUM('File', 'Directory') NOT NULL
+);
+
+/*INSERT INTO File_Index VALUES
+  ("File_01", '01.01.2013', 100, 'File'),
+  ("File_02", '13.01.2013', NULL, 'Directory');*/

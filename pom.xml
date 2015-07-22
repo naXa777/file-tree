@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- The Basics -->
+    <groupId>file-tree</groupId>
+    <artifactId>file-tree</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <!-- Shared Spring version number properties -->
+    <properties>
+        <spring.version>3.2.3.RELEASE</spring.version>
+    </properties>
+
+    <dependencies>
+        <!-- MySQL Connector/J -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.25</version>
+        </dependency>
+
+        <!--
+            Core utilities used by other modules.
+            Required for using Spring Utility APIs (org.springframework.core.*/org.springframework.util.*)
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!--
+            Bean Factory and JavaBeans utilities (depends on spring-core)
+            Required for using Spring Bean APIs (org.springframework.beans.*)
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!--
+            Application Context (depends on spring-core, spring-expression, spring-aop, spring-beans)
+            This is the central artifact for Spring's Dependency Injection Container and is generally always defined
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!--
+            Various Application Context utilities, including EhCache, JavaMail, Quartz, and Freemarker integration
+            Define this if you need any of these integrations
+        ->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>     -->
+
+        <!--
+            JDBC Data Access Library (depends on spring-core, spring-beans, spring-context, spring-tx)
+            Required for using Spring's JdbcTemplate API (org.springframework.jdbc.*)
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!--
+            Spring MVC for Servlet Environments (depends on spring-core, spring-beans, spring-context, spring-web)
+            Required for using Spring MVC (Model-View-Container) with a Servlet Container such as Apache Tomcat (org.springframework.web.servlet.*)
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!--
+            Servlets/JSP
+        -->
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>2.1</version>
+        </dependency>
+
+        <!--
+                    Other (probable) Spring dependencies
+                ->
+                <dependency>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-commons</artifactId>
+                    <version>2.2.3</version>
+                </dependency>
+                <dependency>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                    <version>2.2.3</version>
+                </dependency>
+        
+                <dependency>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib-nodep</artifactId>
+                    <version>2.2</version>
+                </dependency>
+        
+                <dependency>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                    <version>2.7.7</version>
+                </dependency>
+        
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                    <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-orm</artifactId>
+                    <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                    <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-expression</artifactId>
+                    <version>${spring.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-test</artifactId>
+                    <version>${spring.version}</version>
+                </dependency> -->
+    </dependencies>
+
+    <!-- Build Settings -->
+    <build>
+        <finalName>file-tree</finalName>
+        <sourceDirectory>src/main/java</sourceDirectory>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!--
+                        maven-compiler-plugin is a default plugin that will be executed whether you specify it or not
+                    -->
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>  <!-- JDK compiler version -->
+                        <target>1.6</target>  <!-- JRE target version -->
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- For connecting external file with Tomcat server properties -->
+            <!--
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>src/main/resources/server.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+
+            <!-- For JAR packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.exadel.filetree.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <version>2.4</version>
+            </plugin>
+
+            <!-- For WAR packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+                <version>2.3</version>
+            </plugin>
+
+            <!-- For deploying application on(?) Tomcat server -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>tomcat-maven-plugin</artifactId>
+                <configuration>
+                    <url>http://localhost:8080/manager/text</url>
+                    <server>TomcatServer</server>
+                    <path>/file-tree</path>
+                </configuration>
+                <version>1.1</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- More Project Information -->
+    <name>File-tree</name>
+    <description>Remote file browsing application with WEB interface</description>
+    <url>http://maven.apache.org</url>  <!-- ?? -->
+    <organization>
+        <name>Exadel</name>
+        <url>www.exadel.com</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>naXa!</name>
+            <email>naXa@nextmail.ru</email>
+        </developer>
+    </developers>
+
+    <!-- Environment Settings -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+
+        <repository>
+            <id>spring-source</id>
+            <name>SpringSource Enterprise Bundle Repositories</name>
+            <url>http://repository.springsource.com/maven/bundles/milestone</url>
+        </repository>
+
+        <!--
+        <repository>
+            <id>com.springsource.repository.libraries.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Library Releases</name>
+            <url>http://repository.springsource.com/maven/libraries/release</url>
+        </repository>
+
+        <repository>
+            <id>com.springsource.repository.libraries.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+            <url>http://repository.springsource.com/maven/libraries/external</url>
+        </repository>
+
+        <repository>
+            <id>ibibliorep</id>
+            <name>iBiblio</name>
+            <url>http://mirrors.ibiblio.org/maven2</url>
+        </repository> -->
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>ibibliorep2</id>
+            <name>iBiblio</name>
+            <url>http://mirrors.ibiblio.org/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

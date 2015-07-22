@@ -1,0 +1,13 @@
+package com.exadel.filetree;
+
+//import org.springframework.web.context.support.XmlWebApplicationContext;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 02.07.13
+ * Time: 9:39
+ */
+public class FileTreeAppContext {
+
+}

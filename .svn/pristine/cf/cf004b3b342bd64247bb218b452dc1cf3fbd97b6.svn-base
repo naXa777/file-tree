@@ -1,0 +1,105 @@
+package com.exadel.filetree;
+
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.sql.*;
+import java.util.Properties;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 20.06.13
+ * Time: 21:38
+ */
+public class DBService extends AbstractService {
+    private static final PrintStream cons = System.out;
+    private static final String pathToIniFile = "src\\main\\resources\\jdbc connection.properties";
+
+    private Connection conn;
+
+    /**
+     * Default constructor.
+     */
+    public DBService() {
+        super();
+
+        try {
+            String url, userName, password;
+            //url = "jdbc:mysql://localhost/test";
+            //userName = "naXa!";
+            //password = "1009";
+
+            Properties props = new Properties();
+            props.load( new FileInputStream( pathToIniFile ) );
+            url      = props.getProperty( "url" );
+            userName = props.getProperty( "username" );
+            password = props.getProperty( "password" );
+
+            //DriverManager.registerDriver(  );
+            Class.forName( "com.mysql.jdbc.Driver" ).newInstance();
+            conn = DriverManager.getConnection( url, userName, password );
+
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM file_index");
+            ResultSet rs = stmt.executeQuery();
+            cons.println( "Результат запроса: \n" + rs );
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        } finally {
+            if (conn != null)
+                try {
+                    conn.close();
+                    cons.println("Database connection terminated.");
+                } catch (SQLException exc) {
+                    exc.printStackTrace();
+                }
+        }
+    }
+
+    @Override
+    public boolean wasSerialized(File dir) {
+        // TODO: implement this check
+        return false;
+    }
+
+    /**
+     * Big constructor.
+     * @param path Path to a directory
+     */
+    public DBService(String path) {
+        this();
+
+        directory = new File( path );
+        if (!directory.exists() || !directory.isDirectory())
+            cons.println("[!] Argument PATH isn't a valid folder."); // I can't keep working in such embarrassing environment!");
+    }
+
+    /**
+     * Serialization. Method writes directory description (current states) into DB.
+     *
+     * @param dir
+     * @throws IOException
+     */
+    @Override
+    public void saveDescription(Set<FileIndex> description, File dir) throws IOException {
+        //TODO: Implement serialization to DB
+
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and records it to HashSet<FileIndex> description.
+     *
+     * @param dir
+     * @throws IOException
+     */
+    @Override
+    public Set<FileIndex> loadDescription(File dir) throws IOException {
+        //TODO: Implement deserialization from DB
+        return null;
+    }
+
+
+
+}

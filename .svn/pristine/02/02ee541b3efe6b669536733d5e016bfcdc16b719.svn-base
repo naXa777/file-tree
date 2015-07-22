@@ -1,0 +1,114 @@
+package com.exadel.filetree;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.String;
+import java.util.Set;
+
+//import javax.servlet.annotation.WebServlet;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 27.06.13
+ * Time: 1:20
+ */
+//@WebServlet("/file-tree")
+public class MainServlet extends HttpServlet {
+    private static final long serialVersionUID = -6518190301785071457L;
+    private IService srvc;
+
+    public MainServlet() {
+        ApplicationContext context = new ClassPathXmlApplicationContext( "classpath:app-context.xml" );
+        srvc = (IService)context.getBean( "useThis" );
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+    }
+
+    @Override
+    protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost( req, resp );
+    }
+
+    /**
+     *
+     * @param req Request from page
+     * @param resp Response from server
+     * @throws ServletException
+     * @throws IOException
+     */
+    @Override
+    protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        final String headFragment = "<HTML>\n" +
+                                    "<HEAD>\n" +
+                                    "   <link rel=\"stylesheet\" type=\"text/css\" href=\"styles.css\" />\n" +
+                                    "   <title>File Browser</title>\n" +
+                                    "</HEAD>\n" +
+                                    "<BODY>\n" +
+                                    "   <h1 class=\"page-title\">" + getMessage() + "</h1>\n" +
+                                    "   <br /><br />",
+                    tailFragment  = "   </table>\n" +
+                                    "</BODY>\n" +
+                                    "</HTML>",
+                    encoding      = "UTF-8";
+
+        resp.setContentType( "text/html" );
+        resp.setCharacterEncoding( encoding );   // For proper displaying of russian characters (Cyrillic)
+        PrintWriter writer = resp.getWriter();
+        try {
+            writer.println( headFragment );
+
+            String dirName = req.getParameter( "path" );
+            if (dirName == null || dirName.isEmpty())
+                dirName = "D:\\";   //TODO: move default path to properties
+            else
+                dirName = URLDecoder.decode( dirName, encoding );
+            writer.println( "<h2>There is the content of '" + dirName + "':</h2>\n" +
+                            "<br />\n" +
+                            "<table border=\"0\">");
+            Set<FileIndex> state2 = srvc.describeIt( new File( dirName ) );
+
+            // .. (parent directory)
+            String encodedUrl;
+            Integer slashPos = dirName.lastIndexOf( "\\", dirName.length() - 2 );
+            if (slashPos != -1) {
+                encodedUrl = URLEncoder.encode( dirName.substring( 0, slashPos ), encoding );
+                writer.println( "<td><a href=\"" + req.getContextPath() + "file-tree?path=" + encodedUrl + "\">[..]</a></td>" );
+            }
+            for (FileIndex fi : state2) {
+                String fileName = fi.getFileName();
+                encodedUrl = URLEncoder.encode( fi.getFullName(), encoding );
+                writer.println( "<tr>" );
+                if (fi.isFile())
+                    writer.println( "<td>" + fileName + "</td>" );
+                else
+                    writer.println( "<td><a href=\"" + req.getContextPath() + "file-tree?path=" + encodedUrl + "\">" + fileName + "</a></td>" );
+                writer.println( "</tr>" );
+            }
+            writer.println( tailFragment );
+        } finally {
+            writer.close();
+        }
+    }
+
+    /**
+     *
+     * @return Welcome message
+     */
+    public static String getMessage() {
+        return "Welcome, Dear Visitor!";
+    }
+}

@@ -1,0 +1,84 @@
+package com.exadel.filetree.web;
+
+//import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.exadel.filetree.data.ChangeDescription;
+import com.exadel.filetree.data.FileIndex;
+import com.exadel.filetree.service.IService;
+import com.exadel.filetree.service.ServiceException;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 02.07.13
+ * Time: 17:51
+ */
+public class FileTreeBrowser implements Controller {
+    private String initDir;
+
+    @Override
+    public ModelAndView handleRequest(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+        WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(httpServletRequest.getSession().getServletContext());
+        IService srvc = (IService)context.getBean( "useThis" );
+
+        String pathParam = httpServletRequest.getParameter( "path" );
+        String filenameParam = httpServletRequest.getParameter( "filename" );
+        if (pathParam == null)
+            pathParam = getInitDir();
+        if (filenameParam == null)
+            filenameParam = "";
+        String dirName = pathParam + File.separator + filenameParam;
+
+        File target = new File( dirName );
+        TreeSet<ChangeDescription> cmpResult = null;
+
+            // logic
+        Set<FileIndex>  state1 = null,
+                        state2 = null;
+        try {
+
+            state2 = srvc.describeIt( target );
+
+            if (srvc.wasSerialized( target )) {
+                state1 = srvc.loadDescription( target );
+                cmpResult = (TreeSet<ChangeDescription>)srvc.compareStates( state1, state2 );
+            }
+
+            //TODO: do it only if 'auto-save' option is checked
+            srvc.saveDescription( state2, target );
+        } catch (ServiceException exc) {
+            exc.printStackTrace();
+        } finally {
+            // this block will do its work even if DB-server has not started
+            if (state1 == null && state2 != null) {
+                // create new description for all files (mark them NOT CHANGED)
+                cmpResult = new TreeSet<ChangeDescription>();
+                for (FileIndex fi : state2)
+                    cmpResult.add( new ChangeDescription( fi ) );
+            }
+        }
+
+        //httpServletResponse.setCharacterEncoding( "UTF-8" );
+        ModelAndView mav = new ModelAndView( "browse" );
+        mav.addObject( "report", cmpResult );
+        return mav;
+    }
+
+    public String getInitDir() {
+        return initDir;
+    }
+
+    public void setInitDir(String initDir) {
+        this.initDir = initDir;
+    }
+}

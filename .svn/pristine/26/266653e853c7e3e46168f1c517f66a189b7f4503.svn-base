@@ -1,0 +1,116 @@
+<%@ include file="include.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: naXa!
+  Date: 02.07.13
+  Time: 16:16
+--%>
+<html>
+<head>
+    <title>File-tree (Remote file browser)</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1 class="page-title">Welcome, Dear Visitor!</h1>
+    <br /><br />
+
+    <c:set var="imgDir" value="/icon-set/" />
+    <c:set var="path" value='<%=request.getParameter( "path" )%>' />
+
+    <%-- get parent directory name --%>
+    <%--
+    <c:if test="${not empty path}">
+        <c:set var="slashIdx" value='<%=request.getParameter( "path" ).lastIndexOf( "/" )%>' />
+        <c:if test="${slashIdx gt 0}">
+            <c:set var="parent" value="${fn:substringBefore( path, slashIdx )}" />
+            <c:set var="folder_name" value="${fn:substringAfter( path, slashIdx )}" />
+        </c:if>
+    </c:if> --%>
+
+    <c:set var="filename" value='<%=request.getParameter( "filename" )%>' />
+    <h2>
+        <img src="${imgDir}Type-Folder-Open.ico"
+             alt="Opened directory"
+             width="32px"
+             height="32px" />
+        <c:if test="${not empty path}">
+            There is the content of ${path}
+        </c:if>
+        <c:if test="${not empty filename}">
+            \ ${filename}:
+        </c:if>
+    </h2>
+
+    <table border="0">
+    <%-- .. (parent) --%>
+    <tr>
+        <td />
+        <%--
+        <c:url value="/browse.htm" var="link_to_this_page">
+            <c:param name="path" value="${parent}" />
+            <c:param name="filename" value="${folder_name}" />
+            <%--
+            <c:if test="${empty parent}">
+                <c:set var="filename" value="${fn:substringAfter( path, slashIdx )}" />
+                <c:param name="filename" value="${filename}" />
+            </c:if> --%>
+        <%--
+        </c:url>
+        <a href='<c:out value="${link_to_this_page}" />'>[..]</a> --%>
+        <c:if test="${not empty filename}">
+        <td>
+            <input type="button" class="flat" id="backBtn" value="[..]" onClick="history.back()">
+        </td>
+        </c:if>
+        <td />
+    </tr>
+
+    <c:forEach var="cd" items="${report}">
+    <tr>
+        <c:choose>
+        <c:when test="${cd.file == false}">
+            <%-- Directories --%>
+            <c:url value="/browse.htm" var="link_to_this_page">
+                <c:param name="path" value="${cd.parent}" />
+                <c:param name="filename" value="${cd.filename}" />
+            </c:url>
+            <td><img src="${imgDir}Type-Folder.ico" alt="T:Directory" bgcolor="yellow" width="16px" height="16px" /></td>
+            <td><a href='<c:out value="${link_to_this_page}" />'>${cd.filename}</a></td>
+            <td />
+        </c:when>
+        <c:otherwise>
+            <%-- Documents --%>
+            <td><img src="${imgDir}Type-Document.ico" alt="T:Document" bgcolor="white" width="16px" height="16px" /></td>
+            <td>${cd.filename}</td>
+            <td>${cd.size} B</td>
+        </c:otherwise>
+        </c:choose>
+
+            <%-- Visual representation of a change --%>
+            <td>
+        <c:choose>
+            <c:when test="${cd == 'NO CHANGES'}">
+                <img src="${imgDir}File-Not-changed.ico" alt="${cd}" bgcolor="white" width="16px" height="16px">
+            </c:when>
+            <c:when test="${cd == 'MODIFIED'}">
+                <img src="${imgDir}File-Modified.ico" alt="${cd}" bgcolor="yellow" width="16px" height="16px">
+            </c:when>
+            <c:when test="${cd == 'DELETED'}">
+                <img src="${imgDir}File-Deleted.ico" alt="${cd}" bgcolor="red" width="16px" height="16px">
+            </c:when>
+            <c:when test="${cd == 'NEW FILE'}">
+                <img src="${imgDir}File-Created.ico" alt="${cd}" bgcolor="green" width="16px" height="16px">
+            </c:when>
+            <c:when test="${cd == 'REPLACED WITH ITS PREVIOUS VERSION'}">
+                <img src="${imgDir}File-Rollbacked.ico" alt="${cd}" bgcolor="blue" width="16px" height="16px">
+            </c:when>
+        </c:choose>
+                <h3 class="description">${cd}</h3>
+            </td>
+    </tr>
+    </c:forEach>
+    </table>
+</body>
+</html>

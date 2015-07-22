@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd"
+        >
+
+    <!--
+    <context:component-scan base-package="com.exadel.filetree.web" />
+    <mvc:annotation-driven /> -->
+
+    <bean name="/browse.htm" class="com.exadel.filetree.web.FileTreeBrowser" />
+
+    <!-- Next component resolves what page application should show to user -->
+    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/pages/" />
+        <property name="suffix" value=".jsp" />
+        <property name="servletContext" ref="servletContext"/>
+    </bean>
+</beans>

@@ -1,0 +1,138 @@
+package com.exadel.filetree;
+
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 19.06.13
+ * Time: 22:26
+ */
+public class XMLService extends AbstractService {
+    private static final PrintStream cons = System.out;
+    private static final String pathToPropsFile = "src\\main\\resources\\output.properties";
+    protected String outputDir;
+
+    /**
+     * Default constructor.
+     */
+    public XMLService() {
+        super();
+
+        Properties props = new Properties();
+        try {
+            props.load( new FileInputStream( pathToPropsFile ) );
+            outputDir = props.getProperty( "path" );
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Big constructor.
+     * @param path Path to a directory
+     */
+    public XMLService(String path) {
+        this();
+
+        directory = new File( path );
+        if (!directory.exists() || !directory.isDirectory())
+            System.err.println("[!] Argument PATH isn't a valid folder."); // I can't keep working in such embarrassing environment!");
+    }
+
+    /**
+     * Serialization. Method writes directory description into XML-file.
+     *
+     * @param description
+     * @param dir
+     * @throws IOException
+     */
+    @Override
+    public void saveDescription(Set<FileIndex> description, File dir) throws IOException {
+            // create Output file and directories, if they don't exist yet
+        File outPath = new File( outputDir );
+        if (!outPath.exists())
+            outPath.mkdirs();
+        outPath = setUpOutputFile();
+        if (!outPath.exists())
+            outPath.createNewFile();
+
+        XMLEncoder encoder = new XMLEncoder( new BufferedOutputStream(
+                                                new FileOutputStream( outPath ) ) );
+        for (FileIndex fi : description)
+            encoder.writeObject( fi );
+        encoder.writeObject( new FileIndex() );   // XML-файл завершается пустой записью
+        encoder.close();
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and returns it as a result.
+     *
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public Set<FileIndex> loadDescription(File dir) throws IOException {
+        //setDi(  );
+        HashSet<FileIndex> result = new HashSet<FileIndex>();
+        XMLDecoder decoder = new XMLDecoder( new BufferedInputStream(
+                                new FileInputStream( dir ) ) );
+
+        //description = (Set<FileIndex>) decoder.readObject();
+        FileIndex fi = (FileIndex)decoder.readObject();
+        while (!fi.getFilename().isEmpty()) {
+            // cons.println( fi );
+            result.add( fi );
+            fi = (FileIndex)decoder.readObject();
+        }
+
+        decoder.close();
+        return result;
+    }
+
+    @Override
+    public boolean wasSerialized(File dir) {
+        File f = setUpOutputFile( dir );
+        return (f.exists());
+    }
+
+    /**
+     * @return Directory in which class stores XML-files
+     */
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    /**
+     * Method for changing output directory.
+     *
+     * @param outputDir Directory in which XML-files should be stored
+     */
+    public void setOutputDir(String outputDir) {
+        while (outputDir.endsWith( File.separator ))
+            outputDir.substring( 0, outputDir.length() - 1 );
+        this.outputDir = outputDir;
+    }
+
+    /**
+     *
+     * @param dir Name of a directory specified by user as input directory
+     * @return
+     */
+    private File setUpOutputFile(File dir) {
+        File output = new File( getOutputDir() + File.separator +
+                                dir.getAbsolutePath().hashCode() + ".xml" );
+        return output;
+    }
+
+    private File setUpOutputFile() {
+        return setUpOutputFile( directory );
+    }
+}

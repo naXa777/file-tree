@@ -1,0 +1,27 @@
+package com.exadel.filetree;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 26.06.13
+ * Time: 12:57
+ */
+public class ServiceException extends Exception {
+    private static final long serialVersionUID = 5182289355989673417L;
+
+    public ServiceException() {
+        super();
+    }
+
+    public ServiceException(String message) {
+        super( message );
+    }
+
+    public ServiceException(String message, Throwable cause) {
+        super( message, cause );
+    }
+
+    public ServiceException(Throwable cause) {
+        super( cause );
+    }
+}

@@ -1,0 +1,17 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: naXa!
+  Date: 02.07.13
+  Time: 16:16
+--%>
+<%@ include file="include.jsp" %>
+<html>
+<head>
+    <title>File-tree (Remote file browser)</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Hello - Spring Application</h1>
+    <p>Greetings.</p>
+</body>
+</html>

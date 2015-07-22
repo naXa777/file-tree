@@ -1,0 +1,61 @@
+package com.exadel.filetree;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.Set;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 14.06.13
+ * Time: 15:07
+ */
+public class Main {
+    static final PrintStream cons = System.out;
+
+    /**
+     * Entry point.
+     *
+     * @param args  program arguments.
+     *              The 1st argument must be a path to a directory.
+     **/
+    public static void main(String args[]) {
+        ApplicationContext context = new ClassPathXmlApplicationContext( "classpath:app-context.xml" );
+
+        if (args.length < 1) {
+            cons.println("[!] You must specify a folder as the first argument in order to run this program.\n" +
+                            "Usage: %program_name% \"Drive:\\path\\to\\folder\"");
+            return;
+        }
+
+        try {
+            //AbstractService srvc = new XMLService();
+            //AbstractService srvc = new DBService();
+            //AbstractService srvc = new SpringDBService();
+            IService srvc = (IService)context.getBean( "useThis" );
+
+            File targetDir = new File( args[0] );
+            if (!srvc.wasSerialized( targetDir )) {
+                    // First run
+                Set<FileIndex> state1 = srvc.describeIt( targetDir );
+                srvc.saveDescription( state1, targetDir );
+                cons.println("[i] OK! I've remembered directory \"" + args[0] + "\".");
+            } else {
+                    // Successive runs
+                Set<FileIndex> state1 = srvc.loadDescription( targetDir );
+                Set<FileIndex> state2 = srvc.describeIt( targetDir );
+
+                cons.println("--- - ---\n Report \n--- - ---");
+                Set<ChangeDescription> report = srvc.compareStates( state1, state2 );
+                for (ChangeDescription cd : report)
+                    cons.println( cd );
+
+                srvc.saveDescription( state2, targetDir );
+            }
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
+    }
+}

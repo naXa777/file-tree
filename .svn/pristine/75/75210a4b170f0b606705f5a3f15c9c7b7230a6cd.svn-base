@@ -1,0 +1,116 @@
+package com.exadel.filetree;
+
+import org.springframework.stereotype.Service;
+
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 19.06.13
+ * Time: 22:26
+ */
+@Service
+public class XMLService extends AbstractService {
+    protected String outputDir;
+
+    /**
+     * Default constructor.
+     */
+    public XMLService() {
+        super();
+    }
+
+    /**
+     * Check.
+     *
+     * @param dir reference to a directory
+     * @return <code>TRUE</code>, if a file with a description for specified directory exists; <code>FALSE</code> otherwise
+     */
+    @Override
+    public boolean wasSerialized(File dir) {
+        return (setUpOutputFile( dir ).exists());
+    }
+
+    /**
+     * Serialization. Method writes directory description into XML-file.
+     *
+     * @param description decsription of directory content
+     * @param dir reference to a directory
+     * @throws IOException
+     */
+    @Override
+    public void saveDescription(Set<FileIndex> description, File dir) throws IOException {
+            // create Output file and directories, if they don't exist yet
+        File outPath = new File( outputDir );
+        if (!outPath.exists())
+            outPath.mkdirs();
+        outPath = setUpOutputFile( dir );
+        if (!outPath.exists())
+            outPath.createNewFile();
+
+        XMLEncoder encoder = new XMLEncoder( new BufferedOutputStream(
+                                                new FileOutputStream( outPath ) ) );
+        for (FileIndex fi : description)
+            encoder.writeObject( fi );
+        encoder.writeObject( new FileIndex() );   // XML-file ends with empty record
+        encoder.close();
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and returns it as a result.
+     *
+     * @return directory description
+     * @throws IOException
+     */
+    @Override
+    public Set<FileIndex> loadDescription(File dir) throws IOException {
+        HashSet<FileIndex> result = new HashSet<FileIndex>();
+        File outPath = setUpOutputFile( dir );
+        XMLDecoder decoder = new XMLDecoder( new BufferedInputStream(
+                                new FileInputStream( outPath ) ) );
+
+        FileIndex fi = (FileIndex)decoder.readObject();
+        while (!fi.getFilename().isEmpty()) {
+            result.add( fi );
+            fi = (FileIndex)decoder.readObject();
+        }
+
+        decoder.close();
+        return result;
+    }
+
+    /**
+     * @return directory in which class stores XML-files
+     */
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    /**
+     * Method for changing output directory.
+     *
+     * @param outputDir directory in which XML-files should be stored
+     */
+    public void setOutputDir(String outputDir) {
+        while (outputDir.endsWith( File.separator ))
+            outputDir.substring( 0, outputDir.length() - 1 );
+        this.outputDir = outputDir;
+    }
+
+    /**
+     * Method assigns output file for specified directory.
+     *
+     * @param dir reference to a directory specified by user as input directory
+     * @return output XML-file
+     */
+    private File setUpOutputFile(File dir) {
+        return new File( getOutputDir() + File.separator +
+                                dir.getAbsolutePath().hashCode() + ".xml" );
+    }
+}

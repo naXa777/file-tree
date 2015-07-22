@@ -1,0 +1,8 @@
+#Application runtime details
+#Mon Jun 24 16:26:10 FET 2013
+
+# Service, which will be used
+# Allowed values: xmlService | dbService | springDBService
+use_implementation=springDBService
+initial_directory=D:\\
+image_directory=icon-set\\

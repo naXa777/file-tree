@@ -1,0 +1,5 @@
+#Default output directory
+#Mon Jun 24 10:00:57 FET 2013
+
+# Path to a folder, in which output xml-files should be stored
+out_path=Default Output Folder

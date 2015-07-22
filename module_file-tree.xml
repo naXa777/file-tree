@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_file-tree" default="compile.module.file-tree">
+  <dirname property="module.file-tree.basedir" file="${ant.file.module_file-tree}"/>
+  
+  <property name="module.jdk.home.file-tree" value="${jdk.home.1.7}"/>
+  <property name="module.jdk.bin.file-tree" value="${jdk.bin.1.7}"/>
+  <property name="module.jdk.classpath.file-tree" value="jdk.classpath.1.7"/>
+  
+  <property name="compiler.args.file-tree" value="${compiler.args}"/>
+  
+  <property name="file-tree.output.dir" value="${module.file-tree.basedir}/target/classes"/>
+  <property name="file-tree.testoutput.dir" value="${module.file-tree.basedir}/target/test-classes"/>
+  
+  <path id="file-tree.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="file-tree.module.production.classpath">
+    <path refid="${module.jdk.classpath.file-tree}"/>
+    <path refid="library.spring-3.2.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:3.2.3.release.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:3.2.3.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:3.2.3.release.classpath"/>
+    <path refid="library.maven:_asm:asm-commons:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm-tree:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm:2.2.3.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.classpath"/>
+    <path refid="library.maven:_antlr:antlr:2.7.7.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-orm:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-test:3.2.3.release.classpath"/>
+  </path>
+  
+  <path id="file-tree.runtime.production.module.classpath">
+    <pathelement location="${file-tree.output.dir}"/>
+    <path refid="library.spring-3.2.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:3.2.3.release.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:3.2.3.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:3.2.3.release.classpath"/>
+    <path refid="library.maven:_asm:asm-commons:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm-tree:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm:2.2.3.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.classpath"/>
+    <path refid="library.maven:_antlr:antlr:2.7.7.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-orm:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-test:3.2.3.release.classpath"/>
+  </path>
+  
+  <path id="file-tree.module.classpath">
+    <path refid="${module.jdk.classpath.file-tree}"/>
+    <pathelement location="${file-tree.output.dir}"/>
+    <path refid="library.spring-3.2.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:3.2.3.release.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:3.2.3.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:3.2.3.release.classpath"/>
+    <path refid="library.maven:_asm:asm-commons:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm-tree:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm:2.2.3.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.classpath"/>
+    <path refid="library.maven:_antlr:antlr:2.7.7.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-orm:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-test:3.2.3.release.classpath"/>
+  </path>
+  
+  <path id="file-tree.runtime.module.classpath">
+    <pathelement location="${file-tree.testoutput.dir}"/>
+    <pathelement location="${file-tree.output.dir}"/>
+    <path refid="library.spring-3.2.2.classpath"/>
+    <path refid="library.maven:_mysql:mysql-connector-java:5.1.6.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-core:3.2.3.release.classpath"/>
+    <path refid="library.maven:_commons-logging:commons-logging:1.1.1.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-beans:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-aop:3.2.3.release.classpath"/>
+    <path refid="library.maven:_aopalliance:aopalliance:1.0.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-expression:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-context-support:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-jdbc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-tx:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-webmvc:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-web:3.2.3.release.classpath"/>
+    <path refid="library.maven:_asm:asm-commons:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm-tree:2.2.3.classpath"/>
+    <path refid="library.maven:_asm:asm:2.2.3.classpath"/>
+    <path refid="library.maven:_cglib:cglib-nodep:2.2.classpath"/>
+    <path refid="library.maven:_antlr:antlr:2.7.7.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-orm:3.2.3.release.classpath"/>
+    <path refid="library.maven:_org.springframework:spring-test:3.2.3.release.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.file-tree">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.file-tree">
+    <patternset refid="excluded.from.module.file-tree"/>
+  </patternset>
+  
+  <path id="file-tree.module.sourcepath">
+    <dirset dir="${module.file-tree.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="file-tree.module.test.sourcepath">
+    <dirset dir="${module.file-tree.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.file-tree" depends="compile.module.file-tree.production,compile.module.file-tree.tests" description="Compile module file-tree"/>
+  
+  <target name="compile.module.file-tree.production" depends="register.custom.compilers" description="Compile module file-tree; production classes">
+    <mkdir dir="${file-tree.output.dir}"/>
+    <javac2 destdir="${file-tree.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.file-tree}/javac">
+      <compilerarg line="${compiler.args.file-tree}"/>
+      <bootclasspath refid="file-tree.module.bootclasspath"/>
+      <classpath refid="file-tree.module.production.classpath"/>
+      <src refid="file-tree.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.file-tree"/>
+    </javac2>
+    
+    <copy todir="${file-tree.output.dir}">
+      <fileset dir="${module.file-tree.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.file-tree.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.file-tree.tests" depends="register.custom.compilers,compile.module.file-tree.production" description="compile module file-tree; test classes" unless="skip.tests">
+    <mkdir dir="${file-tree.testoutput.dir}"/>
+    <javac2 destdir="${file-tree.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.file-tree}/javac">
+      <compilerarg line="${compiler.args.file-tree}"/>
+      <bootclasspath refid="file-tree.module.bootclasspath"/>
+      <classpath refid="file-tree.module.classpath"/>
+      <src refid="file-tree.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.file-tree"/>
+    </javac2>
+    
+    <copy todir="${file-tree.testoutput.dir}">
+      <fileset dir="${module.file-tree.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.file-tree" description="cleanup module">
+    <delete dir="${file-tree.output.dir}"/>
+    <delete dir="${file-tree.testoutput.dir}"/>
+  </target>
+</project>

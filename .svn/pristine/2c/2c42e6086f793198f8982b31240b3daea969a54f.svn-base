@@ -1,0 +1,95 @@
+package com.exadel.filetree;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.lang.String;
+import java.util.Set;
+
+//import javax.servlet.annotation.WebServlet;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 27.06.13
+ * Time: 1:20
+ */
+//@WebServlet("/file-tree")
+public class MainServlet extends HttpServlet {
+    private static final long serialVersionUID = -6518190301785071457L;
+    private IService srvc;
+
+    public MainServlet() {
+        ApplicationContext context = new ClassPathXmlApplicationContext( "classpath:app-context.xml" );
+        srvc = (IService)context.getBean( "useThis" );
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // ...
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Enumeration paramNames = req.getParameterNames();
+        //String parName;
+        //boolean emptyEnum = !paramNames.hasMoreElements();  // doesn't work as planned
+
+        resp.setContentType( "text/html" );
+        PrintWriter writer = resp.getWriter();
+        try {
+            writer.println( "<HTML>\n" +
+                            "<HEAD>\n" +
+                            "   <link rel=\"stylesheet\" type=\"text/css\" href=\"styles.css\" />\n" +
+                            "   <title>File Browser</title>\n" +
+                            "</HEAD>\n" +
+                            "<BODY>\n" +
+                            "   <h1 class=\"page-title\">" + getMessage() + "</h1>\n" +
+                            "   <br /><br />" );
+
+            //if (emptyEnum)
+            //    writer.println( "<h2>Sorry, the request does not contain any parameters.</h2>" );
+            //else {
+            String dirName = req.getParameter( "path" );
+            if (dirName == null || dirName.isEmpty())
+                dirName = "D:\\";   //TODO: move to properties
+            writer.println( "<h2>There is the content of '" + dirName + "':</h2>\n" +
+                            "<br />\n" +
+                            "<table border=\"0\">");
+            Set<FileIndex> state2 = srvc.describeIt( new File( dirName ) );
+            for (FileIndex fi : state2) {
+                String fileName = fi.getFilename(); //TODO: replace with relative file name
+                writer.println( "<tr>" );
+                if (fi.isFile())
+                    writer.println( "<td>" + fileName + "</td>" );
+                else
+                    writer.println( "<td><a href=\"" + req.getContextPath() + "file-tree?path=" + fileName + "\">" + fileName + "</a></td>" );
+                writer.println( "</tr>" );
+            }
+            writer.println( "</table>" );
+            //}
+
+            writer.println( "</BODY>\n" +
+                            "</HTML>" );
+        } finally {
+            writer.close();
+        }
+    }
+
+    public static String getMessage() {
+        return "Welcome, Dear Visitor!";
+    }
+}

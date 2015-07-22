@@ -1,0 +1,55 @@
+package com.exadel.filetree;
+
+import java.io.*;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 14.06.13
+ * Time: 15:07
+ */
+public class Main {
+    static final PrintStream cons = System.out;
+
+    /**
+     * Entry point.
+     * @param args Program arguments.
+     * The 1st argument must be a path to a directory.
+     **/
+    public static void main(String args[]) {
+        if (args.length < 1) {
+            cons.println("[!] You must specify a folder as the first argument in order to run this program.\n" +
+                    "Usage: %program_name% \"Drive:\\path\\to\\folder\"");
+            return;
+        }
+
+        try {
+            AbstractService srvc = new XMLService(/*args[0]*/);
+            //AbstractService srvc = new DBService( args[0] );
+
+            if (!srvc.wasSerialized()) {
+                    // First run
+                Set<FileIndex> state1 = srvc.describeIt( new File ( args[0] ) );
+                srvc.saveDescription( state1, new File ( args[0] ) );
+                cons.println("[i] OK! I've remembered directory \"" + srvc.getDirectoryName() + "\".");
+            } else {
+                    // Successive runs
+                File target = new File ( args[0] );
+                Set<FileIndex> state1 = srvc.loadDescription( target );
+                Set<FileIndex> state2 = srvc.describeIt( target );
+
+                cons.println("--- ---\n Report \n--- ---");
+                Set<ChangeDescription> report = srvc.compareStates( state1, state2 );
+                for (ChangeDescription cd : report)
+                    cons.println( cd );
+
+                srvc.saveDescription( state2, target );
+            }
+        } catch (FileNotFoundException exc) {
+            exc.printStackTrace();
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+    }
+}

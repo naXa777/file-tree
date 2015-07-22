@@ -1,0 +1,163 @@
+package com.exadel.filetree;
+
+import java.io.*;
+import java.sql.*;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 20.06.13
+ * Time: 21:38
+ */
+public class DBService extends AbstractService {
+    private static final PrintStream cons = System.out;
+    private static final String pathToPropsFile = "src\\main\\resources\\jdbc connection.properties";
+
+    private Connection conn = null;
+    private String url, userName, password;
+
+    /**
+     * Default constructor.
+     */
+    public DBService() {
+        super();
+
+        PreparedStatement stmt = null;
+        Properties props = new Properties();
+        try {
+            props.load( new FileInputStream(pathToPropsFile) );
+            url      = props.getProperty( "url" );
+            userName = props.getProperty( "username" );
+            password = props.getProperty( "password" );
+
+            //DriverManager.registerDriver(  );
+            Class.forName( "com.mysql.jdbc.Driver" ).newInstance();
+            conn = DriverManager.getConnection( url, userName, password );
+
+            /*stmt = conn.prepareStatement("SELECT * FROM file_index");
+            ResultSet rs = stmt.executeQuery();
+            //Array filenames = rs.getArray( 1 );
+            cons.println( "Результат запроса:" );
+            while (rs.next())
+                cons.println( rs.getString( 1 ) + " | " + rs.getString( 2 ) + " | " +
+                                rs.getString( 3 ) + " | " + rs.getString( 4 ) + " | " +
+                                rs.getString( 5 ) );  */
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null)
+                    stmt.close();
+                if (conn != null) {
+                    conn.close();
+                    cons.println("Database connection terminated.");
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean wasSerialized(File dir) {
+        // TODO: implement this check
+        return false;
+    }
+
+    /**
+     * Big constructor.
+     * @param path Path to a directory
+     */
+    public DBService(String path) {
+        this();
+
+        setUpInputDir( path );
+    }
+
+    /**
+     * Serialization. Method writes directory description (current states) into DB.
+     *
+     * @param dir
+     * @throws SQLException
+     */
+    @Override
+    public void saveDescription(Set<FileIndex> description, File dir) throws SQLException {
+        String  insertQuery  = "INSERT INTO root_folder(Path) VALUES (?)",
+                insertQuery2 = "INSERT INTO file_index(Filename, LastModification, Size, Type) VALUES (?, ?, ?, ?)",
+                bindQuery    = "INSERT INTO relation(MainParent, Child) VALUES (?, ?)",
+                selectQuery  = "SELECT COUNT(ID) AS N FROM root_folder AS rf WHERE rf.Path LIKE ?",
+                lastIDQuery  = "{CALL mysql_insert_id()}";
+        Integer idRoot, idFileIndex;
+
+        conn = DriverManager.getConnection( url, userName, password );
+
+            // insert - into root_folder
+            //TODO: нужна проверка, чтобы не вставлять повторяющиеся значения
+        PreparedStatement stmt = conn.prepareStatement( insertQuery );
+        stmt.setString( 1, dir.getAbsolutePath() );
+        stmt.execute();
+
+            // get last ID
+        CallableStatement call = conn.prepareCall( lastIDQuery );
+        ResultSet rs = call.executeQuery();
+        idRoot = rs.getInt( 1 );
+
+        for (FileIndex fi : description) {
+                // insert 2 - into file_index
+            stmt = conn.prepareStatement( insertQuery2 );
+            stmt.setString(1, fi.getFilename());
+            stmt.setDate(2, new java.sql.Date(fi.getLastModif().getTime()));
+            stmt.setLong(3, fi.getSize());
+            stmt.setString( 4, fi.isFile()? "File" : "Directory");
+            stmt.execute();
+
+                // get last ID
+            rs = call.executeQuery();
+            idFileIndex = rs.getInt( 1 );
+
+                // bind records in the two tables
+            stmt = conn.prepareStatement( bindQuery );
+            stmt.setInt( idRoot, idFileIndex );
+            stmt.execute();
+        }
+
+        // The End
+    }
+
+    /**
+     * Deserialization. Method reads previous directory state from XML-file,
+     * and records it to HashSet<FileIndex> description.
+     *
+     * @param dir
+     * @throws SQLException
+     */
+    @Override
+    public Set<FileIndex> loadDescription(File dir) throws SQLException {
+        Set<FileIndex> result = new HashSet<FileIndex>();
+        String query =  "SELECT Filename, LastModification, Size, Type " +
+                        "FROM file_index AS fi, relation AS r, root_folder AS rf " +
+                        "WHERE ((fi.ID = r.Child) AND (r.MainParent = rf.ID) AND (rf.Path = ?))";
+
+        conn = DriverManager.getConnection( url, userName, password );
+
+            // select all files
+        PreparedStatement stmt = conn.prepareStatement( query );
+        stmt.setString(1, dir.getAbsolutePath());
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            String filename = rs.getString( "Filename" );
+            Date lastModif = rs.getDate( "LastModification" );
+            String type = rs.getString( "Type" );
+            Long size = 0L;
+            if (type.equals("File"))
+                size = rs.getLong( "Size" );
+
+            result.add( new FileIndex( filename, lastModif, size, (type.equals("File") ) ) );
+        }
+
+        return result;
+    }
+}

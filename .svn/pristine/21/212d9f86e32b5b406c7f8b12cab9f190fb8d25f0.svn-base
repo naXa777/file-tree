@@ -1,0 +1,7 @@
+#Connection details
+#Thu Jun 20 16:30:57 FET 2013
+
+driver=com.mysql.jdbc.Driver
+url=jdbc:mysql://localhost/file_tree_db
+username=naXa\!
+password=1009

@@ -1,0 +1,24 @@
+package com.exadel.filetree;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 20.06.13
+ * Time: 21:36
+ */
+public interface IService {
+    /*
+    public void describeIt(File dir) throws IOException;
+    public void writeDescription() throws IOException;
+    public void readDescription() throws IOException;
+    public void compareState();   */
+    public Set<FileIndex> describeIt(File dir) throws IOException;
+    public void saveDescription(Set<FileIndex> description, File dir) throws Exception;
+    public Set<FileIndex> loadDescription(File dir) throws Exception;
+    public Set<ChangeDescription> compareStates(Set<FileIndex> state1, Set<FileIndex> state2);
+    public boolean wasSerialized(File dir);
+}

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.exadel.filetree.data.ChangeDescription</OriginalElement>
+  <nodes>
+    <node x="45.0" y="218.45054582193052">com.exadel.filetree.data.ChangeDescription</node>
+    <node x="64.88178445046358" y="312.40805522961256">java.lang.Comparable</node>
+    <node x="239.90988017812919" y="101.0">com.exadel.filetree.service.IService</node>
+    <node x="78.79709244784611" y="396.4234741352345">com.exadel.filetree.service.XMLService</node>
+    <node x="242.4195733628831" y="400.38774509189864">com.exadel.filetree.data.FileIndex</node>
+    <node x="102.31865361745426" y="138.35511840882558">com.exadel.filetree.service.DBService</node>
+    <node x="225.1937055587734" y="165.48757328222177">com.exadel.filetree.service.AbstractService</node>
+    <node x="310.0297142106904" y="243.63042968322839">com.exadel.filetree.service.SpringDBService</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.exadel.filetree.service.SpringDBService" target="com.exadel.filetree.data.FileIndex">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.data.ChangeDescription" target="java.lang.Comparable">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.XMLService" target="com.exadel.filetree.data.FileIndex">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.AbstractService" target="com.exadel.filetree.service.IService">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.DBService" target="com.exadel.filetree.data.FileIndex">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.AbstractService" target="com.exadel.filetree.data.ChangeDescription">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.AbstractService" target="com.exadel.filetree.data.FileIndex">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.XMLService" target="com.exadel.filetree.service.AbstractService">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.data.FileIndex" target="java.lang.Comparable">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.DBService" target="com.exadel.filetree.service.AbstractService">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.data.ChangeDescription" target="com.exadel.filetree.data.FileIndex">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="com.exadel.filetree.service.SpringDBService" target="com.exadel.filetree.service.AbstractService">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="234.0" y="265.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

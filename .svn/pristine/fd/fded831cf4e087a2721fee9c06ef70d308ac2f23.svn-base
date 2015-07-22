@@ -1,0 +1,11 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<HTML>
+    <HEAD>
+        <title>JSP page title</title>
+		<link rel="stylesheet" type="text/css" href="styles.css" />
+    </HEAD>
+    <BODY>
+        <h1 class="message">Hello, world!</h1>
+    </BODY>
+</HTML>

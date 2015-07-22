@@ -1,0 +1,151 @@
+package com.exadel.filetree;
+
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
+//import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: naXa!
+ * Date: 14.06.13
+ * Time: 15:07
+ */
+public class Main {
+    static PrintStream con = System.out;
+    static Set<FileIndex> description, currentState;
+
+    /**
+     * Описание всех файлов и каталогов в каталоге file
+     * с занесением в множество currentState.
+     * @param file Описываемый каталог
+     * @throws IOException
+     */
+    static void describeIt(File file) throws IOException {
+        FileIndex fi;
+        fi = new FileIndex( file.getAbsolutePath(), file.lastModified(), file.length(), file.isFile() );
+        currentState.add( fi );
+        //encoder.writeObject( fi );
+
+        //File f = new File( path );
+        if (file.isDirectory()) {
+            //con.println( "Dir: " + file.getAbsolutePath() );
+
+            File content[] = file.listFiles();
+            for (File f : content)
+                describeIt( f );
+            //con.println( "--- --- --- --- ---" );
+        } else {
+            //con.println( file.getAbsolutePath() );
+        }
+    }
+
+    /**
+     * Запись описания директории (currentState) в XML-файл.
+     * @param file XML-файл, в который будет записана информация о содержимом директории
+     * @throws IOException
+     */
+    static void writeDescription(File file) throws IOException {
+        XMLEncoder encoder = new XMLEncoder( new BufferedOutputStream( new FileOutputStream( file ) ) );
+        for (FileIndex fi : currentState)
+            encoder.writeObject( fi );
+        encoder.writeObject( new FileIndex() );   // XML-файл завершается пустой записью
+        encoder.close();
+    }
+
+    /**
+     * Чтение предыдущего состояния каталога из XML-файла,
+     * занесение всех прочитанных записей в HashSet<FileIndex> description.
+     * @param file XML-файл, из которого будет прочитана информация о содержимом директории
+     * @throws IOException
+     */
+    static void readDescription(File file) throws IOException {
+        if (description == null)
+            description = new HashSet<FileIndex>();
+        else
+            description.clear();
+        XMLDecoder decoder = new XMLDecoder( new BufferedInputStream( new FileInputStream( file ) ) );
+
+        //description = (Set<FileIndex>) decoder.readObject();
+        FileIndex fi = (FileIndex)decoder.readObject();
+        while (!fi.getFilename().isEmpty()) {
+            // con.println( fi );
+            description.add( fi );
+            fi = (FileIndex)decoder.readObject();
+        }
+
+        decoder.close();
+        /*for (FileIndex i : description) {
+            con.println( i );
+        } */
+    }
+
+    /**
+     * Сравнение двух состояний: description и currentState
+     * с выводом отчёта в консоль
+     */
+    static void compareState() {
+        for (FileIndex fileIndex : currentState) {
+            if ( fileIndex.getFilename().isEmpty() )  // пропуск пустой записи
+                continue;
+            if (description.contains( fileIndex )) {
+                for (FileIndex alterFileIndex : description)
+                    if (fileIndex.equals( alterFileIndex )) {
+                        if (fileIndex.getLastModif().after( alterFileIndex.getLastModif() ))
+                            con.println( "MODIFIED: " + alterFileIndex );
+                        else if (fileIndex.getLastModif().equals( alterFileIndex.getLastModif() ))
+                            con.println( /*"NO CHANGES: " +*/ alterFileIndex );
+                        else
+                            con.println( "[!] XML-file contains error." );   // дата изменения перенеслась в прошлое
+                    }
+            } else
+                con.println( "NEW FILE: " + fileIndex );
+        }
+        for (FileIndex fileIndex : description)
+            if ( !currentState.contains( fileIndex ) ) {
+                con.println( "DELETED: " + fileIndex );
+            }
+    }
+
+    /**
+     * Точка входа.
+     * @param args Аргументы программы.
+     * Первым аргументом должен быть путь к каталогу.
+     **/
+    public static void main(String args[]) {
+        if (args.length < 1) {
+            con.println( "[!] You must specify a folder as the first argument in order to run this program." );
+            return;
+        }
+
+        try {
+            File dir = new File( args[0] );
+            File output = new File( "Description.xml" );
+            if (!dir.exists() || !dir.isDirectory())
+                con.println( "[!] 1st argument isn't a valid folder.");// I can't keep working in such embarrassing environment!");
+            else if (output.exists()) {
+                    // Повторный запуск
+                readDescription( output );
+                if (currentState == null)
+                    currentState = new HashSet<>();
+                describeIt( dir );
+                compareState();
+                writeDescription( output );
+            } else {
+                    // Первый запуск
+                if (currentState == null)
+                    currentState = new HashSet<>();
+                describeIt( dir );
+                writeDescription( output );
+                con.println( "OK! I've remembered directory \"" + dir.getName() + "\"." );
+            }
+        } catch (FileNotFoundException exc) {
+            exc.printStackTrace();
+        } catch (IOException exc) {
+            exc.printStackTrace();
+        }
+
+    }
+}

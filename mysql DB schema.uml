@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>6bed0d77-d99a-416d-991a-7734ec6117b6.schema:file_tree_db</OriginalElement>
+  <nodes>
+    <node x="0.0" y="0.0">6bed0d77-d99a-416d-991a-7734ec6117b6.table:file_tree_db.file_index</node>
+    <node x="32.0000000000001" y="216.0">6bed0d77-d99a-416d-991a-7734ec6117b6.table:file_tree_db.root_folder</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="6bed0d77-d99a-416d-991a-7734ec6117b6.table:file_tree_db.file_index" target="6bed0d77-d99a-416d-991a-7734ec6117b6.table:file_tree_db.root_folder">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="91.5" y="142.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+

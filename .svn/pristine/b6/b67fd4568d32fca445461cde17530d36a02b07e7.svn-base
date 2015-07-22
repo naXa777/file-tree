@@ -1,0 +1,33 @@
+CREATE DATABASE IF NOT EXISTS file_tree_db;
+
+USE file_tree_db;
+CREATE TABLE IF NOT EXISTS Root_Folder (
+  ID INTEGER NOT NULL AUTO_INCREMENT,
+  Path VARCHAR(1024) NOT NULL,
+  PRIMARY KEY (ID)
+);
+
+CREATE TABLE IF NOT EXISTS File_Index (
+  ID INTEGER NOT NULL AUTO_INCREMENT,
+  Filename VARCHAR(1024) NOT NULL,
+  LastModification DATE NOT NULL,
+  Size BIGINT UNSIGNED,
+  Type ENUM('File', 'Directory') NOT NULL,
+  PRIMARY KEY (ID)
+);
+
+CREATE TABLE IF NOT EXISTS Relation (
+  -- ID INTEGER NOT NULL AUTO_INCREMENT,
+  MainParent INTEGER NOT NULL,
+  Child INTEGER NOT NULL,
+  -- PRIMARY KEY (ID),
+  FOREIGN KEY (MainParent) REFERENCES Root_Folder(ID),
+  FOREIGN KEY (Child) REFERENCES File_Index(ID)
+);
+
+
+
+/*INSERT INTO File_Index(Filename, LastModification, Size, Type) VALUES
+  ("File_01", '01.01.2013', 100, 'File'),
+  ("File_02", '13.01.2013', NULL, 'Directory');
+  */

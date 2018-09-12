@@ -12,7 +12,7 @@
 
     <!-- Shared Spring version number properties -->
     <properties>
-        <spring.version>3.2.3.RELEASE</spring.version>
+        <spring.version>3.2.18.RELEASE</spring.version>
     </properties>
 
     <dependencies>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.25</version>
+            <version>5.1.47</version>
         </dependency>
 
         <!--
@@ -195,18 +195,6 @@
                         <source>1.6</source>  <!-- JDK compiler version -->
                         <target>1.6</target>  <!-- JRE target version -->
                     </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>

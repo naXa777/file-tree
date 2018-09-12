@@ -54,16 +54,6 @@
         </dependency>
 
         <!--
-            Various Application Context utilities, including EhCache, JavaMail, Quartz, and Freemarker integration
-            Define this if you need any of these integrations
-        ->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <version>${spring.version}</version>
-        </dependency>     -->
-
-        <!--
             JDBC Data Access Library (depends on spring-core, spring-beans, spring-context, spring-tx)
             Required for using Spring's JdbcTemplate API (org.springframework.jdbc.*)
         -->
@@ -123,58 +113,6 @@
             <artifactId>commons-digester</artifactId>
             <version>2.1</version>
         </dependency>
-
-        <!--
-                    Other (probable) Spring dependencies
-                ->
-                <dependency>
-                    <groupId>asm</groupId>
-                    <artifactId>asm-commons</artifactId>
-                    <version>2.2.3</version>
-                </dependency>
-                <dependency>
-                    <groupId>asm</groupId>
-                    <artifactId>asm</artifactId>
-                    <version>2.2.3</version>
-                </dependency>
-        
-                <dependency>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib-nodep</artifactId>
-                    <version>2.2</version>
-                </dependency>
-        
-                <dependency>
-                    <groupId>antlr</groupId>
-                    <artifactId>antlr</artifactId>
-                    <version>2.7.7</version>
-                </dependency>
-        
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-tx</artifactId>
-                    <version>${spring.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-orm</artifactId>
-                    <version>${spring.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                    <version>${spring.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-expression</artifactId>
-                    <version>${spring.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-test</artifactId>
-                    <version>${spring.version}</version>
-                </dependency> -->
     </dependencies>
 
     <!-- Build Settings -->
@@ -195,6 +133,18 @@
                         <source>1.6</source>  <!-- JDK compiler version -->
                         <target>1.6</target>  <!-- JRE target version -->
                     </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -259,39 +209,7 @@
         <repository>
             <id>central</id>
             <name>Maven Central</name>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
-
-        <repository>
-            <id>spring-source</id>
-            <name>SpringSource Enterprise Bundle Repositories</name>
-            <url>http://repository.springsource.com/maven/bundles/milestone</url>
-        </repository>
-
-        <!--
-        <repository>
-            <id>com.springsource.repository.libraries.release</id>
-            <name>SpringSource Enterprise Bundle Repository - SpringSource Library Releases</name>
-            <url>http://repository.springsource.com/maven/libraries/release</url>
-        </repository>
-
-        <repository>
-            <id>com.springsource.repository.libraries.external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
-            <url>http://repository.springsource.com/maven/libraries/external</url>
-        </repository>
-
-        <repository>
-            <id>ibibliorep</id>
-            <name>iBiblio</name>
-            <url>http://mirrors.ibiblio.org/maven2</url>
-        </repository> -->
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>ibibliorep2</id>
-            <name>iBiblio</name>
-            <url>http://mirrors.ibiblio.org/maven2</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>

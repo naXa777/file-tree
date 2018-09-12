@@ -188,41 +188,35 @@
                     <!--
                         maven-compiler-plugin is a default plugin that will be executed whether you specify it or not
                     -->
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
                     <configuration>
                         <source>1.6</source>  <!-- JDK compiler version -->
                         <target>1.6</target>  <!-- JRE target version -->
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
-            <!-- For connecting external file with Tomcat server properties -->
-            <!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>read-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <files>
-                                <file>src/main/resources/server.properties</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
-
             <!-- For JAR packaging -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -231,29 +225,28 @@
                         </manifest>
                     </archive>
                 </configuration>
-                <version>2.4</version>
             </plugin>
 
             <!-- For WAR packaging -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
                 <configuration>
                     <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
                 </configuration>
-                <version>2.3</version>
             </plugin>
 
             <!-- For deploying application on(?) Tomcat server -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>tomcat-maven-plugin</artifactId>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
                 <configuration>
                     <url>http://localhost:8080/manager/text</url>
                     <server>TomcatServer</server>
                     <path>/file-tree</path>
                 </configuration>
-                <version>1.1</version>
             </plugin>
         </plugins>
     </build>

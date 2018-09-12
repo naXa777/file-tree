@@ -1,4 +1,5 @@
-# file-tree
+# File Tree
+[![Codeship Status for naXa777/file-tree](https://app.codeship.com/projects/17e4d940-9903-0136-b15a-3601fc6081f4/status?branch=master)](https://app.codeship.com/projects/305398)
 
 ## Description
 
@@ -30,9 +31,11 @@ Implement a web-based file manager that observes file changes. The work has been
   - [ ] Provide user control for directory file indexes update.
   - [x] _(Optional)_ Use Spring Web MVC for the implementation.
 
-Technologies: Maven, J2EE, Servlets/JSP, Tomcat, MVC, Spring Framework.
+**Technologies**: Maven, J2EE, Servlets/JSP, Tomcat, MVC, Spring Framework.
 
 ## Configuration
+
+You can choose to store index either in DB or XML.
 
 ### MySQL Database
 
@@ -46,7 +49,37 @@ Set `app.use.implementation` to `xmlService` in `application.properties` file if
 
 ## Quick Start
 
+### Build web app
+
+    mvn clean package
+
+Output: /target/file-tree.war
+
+### Build console app
+
+    mvn clean jar:jar
+    
+Output: /target/file-tree.jar
+
+### Run web app
+
 1. Deploy the application to Tomcat;
 2. Open [http://localhost:8080/&lt;deploy-path&gt;](http://localhost:8080/file-tree) in a browser;
-3. Type in any credentials;
+3. Guess credentials!
 4. And browse your `D:\` drive from the browser!
+
+### Run console app
+
+    java -jar ./file-tree.jar "D:/example"
+    
+The first argument is a root folder for indexing.
+
+## Screenshots
+
+State 1    
+![File Tree](/screenshots/filetree_1.png)
+
+_Make changes... Refresh page_
+
+State 2  
+![File Tree](/screenshots/filetree_2.png)

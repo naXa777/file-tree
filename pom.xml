@@ -12,7 +12,7 @@
 
     <!-- Shared Spring version number properties -->
     <properties>
-        <spring.version>3.2.18.RELEASE</spring.version>
+        <spring.version>5.3.19</spring.version>
     </properties>
 
     <dependencies>
